@@ -15,6 +15,8 @@ class camion {
 		float min_leche;
 		
 		int nodo_actual;
+
+		float distancia_recorrida;
 	
 	public:
 		//constructor
@@ -26,7 +28,7 @@ class camion {
 		//funciones Set
 		void setCapacidad_total(float capacidad);
 
-		void setCapacidad_utilizada();
+		void setCapacidad_utilizada(float capacidad);
 
 		void setTipo_leche(char leche);
 
@@ -35,6 +37,8 @@ class camion {
 		void setMin_leche(float min);
 
 		void setNodo_actual(int nodo);
+
+		void setDistancia_recorrida(float distancia);
 		
 		//funciones Get
 		float getCapacidad_total() {return capacidad_total;}
@@ -49,10 +53,14 @@ class camion {
 		
 		int getNodo_actual() {return nodo_actual;}
 
+		float getDistancia_recorrida() {return distancia_recorrida;}
+
 		//función de carga
 		void CargarCamion(float carga);
-
+		//añadir nodo a los visitados
 		void anadirNodo(int nodo);
+		//determinar distancia recorrida
+		void distanciaRecorrida(std::vector<std::vector<float>>);
 };
 
 #endif

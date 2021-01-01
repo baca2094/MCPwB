@@ -1,5 +1,6 @@
 #include "mcpwb.h"
 #include <iostream>
+#include <array>
 std::vector<camion> mcpwb(int population_size, int iteraciones, std::vector<camion> camiones, std::string leches, std::vector<float> cantidad_leche_nodo, 
 							std::vector<std::vector<float>> distancias, std::vector<std::vector<int>> tipos_leches, std::vector<float> ganancias){
 	
@@ -45,7 +46,7 @@ std::vector<std::vector<camion>> sol_inicial(int population_size, std::vector<ca
 	std::vector<std::vector<camion>> generacion_inicial;
 	generacion_inicial.push_back(camiones);
 	std::vector<camion> auxiliar_camiones;
-	for (int i = 0; i < population_size-1 ; i++){
+	for (int i = 0; i < population_size ; i++){
 		camion camion1 = camiones[0];
 		camion camion2 = camiones[1];
 		camion camion3 = camiones[2];
@@ -59,15 +60,44 @@ std::vector<std::vector<camion>> sol_inicial(int population_size, std::vector<ca
 	int size;
 	int random2;
     std::vector<camion> reiniciar = camiones;
-	std::vector<std::vector<int>> auxiliar_leches = tipos_leches; //arreglar esta wea
     std::vector<int> palprint;
 	int contador = 1;
     int largo;
 	int i = -1;
-  
+
+	int leches_A1 [tipos_leches[0].size()];
+	int leches_B1 [tipos_leches[1].size()];
+	int leches_C1 [tipos_leches[2].size()];
+	int leches_A2 [tipos_leches[0].size()];
+	int leches_B2 [tipos_leches[1].size()];
+	int leches_C2 [tipos_leches[2].size()];
+	
+	int size_A = tipos_leches[0].size();
+	int size_B = tipos_leches[1].size();
+	int size_C = tipos_leches[2].size();
+
+	std::copy(tipos_leches[0].begin(), tipos_leches[0].end(), leches_A1);
+	std::copy(tipos_leches[1].begin(), tipos_leches[1].end(), leches_B1);
+	std::copy(tipos_leches[2].begin(), tipos_leches[2].end(), leches_C1);
+
+	std::copy(tipos_leches[0].begin(), tipos_leches[0].end(), leches_A2);
+	std::copy(tipos_leches[1].begin(), tipos_leches[1].end(), leches_B2);
+	std::copy(tipos_leches[2].begin(), tipos_leches[2].end(), leches_C2);
+	
+	srand(time(NULL));
 	for(int i = 0; i < generacion_inicial.size(); i++) {
-		srand(time(NULL));
-		tipos_leches = auxiliar_leches;
+		
+		if (i > 0){
+			for (int k = 0; k < size_A; k++){
+				tipos_leches[0].push_back(leches_A1[k]);
+			}
+			for (int k = 0; k < size_B; k++){
+				tipos_leches[1].push_back(leches_B1[k]);
+			}
+			for (int k = 0; k < size_C; k++){
+				tipos_leches[2].push_back(leches_C1[k]);
+			}
+		}
 		for(int j = 0; j < generacion_inicial[i].size(); j++){
 			if (generacion_inicial[i][j].getTipo_leche() == 'A'){
 				while(generacion_inicial[i][j].getMin_leche() > generacion_inicial[i][j].getCapacidad_utilizada()){
@@ -126,9 +156,58 @@ std::vector<std::vector<camion>> sol_inicial(int population_size, std::vector<ca
 			}
 		}
 
-		for (int i = 0; i < tipos_leches.size(); i++){
-			for (int j = 0; j < tipos_leches[i].size(); j++){
-				std::cout << tipos_leches[i][j] << " ";
+		int nodo;
+		while(tipos_leches[0].size() > 0){
+			nodo = tipos_leches[0][tipos_leches[0].size()-1];
+			tipos_leches[0].pop_back();
+			std::cout << nodo << std::endl;
+			if ((generacion_inicial[i][0].getCapacidad_utilizada() + cantidad_leche_nodo[nodo-1]) <= generacion_inicial[i][0].getCapacidad_total()){
+				generacion_inicial[i][0].CargarCamion(cantidad_leche_nodo[nodo-1]);
+				generacion_inicial[i][0].anadirNodo(nodo);
+				generacion_inicial[i][0].setNodo_actual(nodo);
+			}
+			else if ((generacion_inicial[i][1].getCapacidad_utilizada() + cantidad_leche_nodo[nodo-1]) <= generacion_inicial[i][1].getCapacidad_total()){
+				generacion_inicial[i][1].CargarCamion(cantidad_leche_nodo[nodo-1]);
+				generacion_inicial[i][1].anadirNodo(nodo);
+				generacion_inicial[i][1].setNodo_actual(nodo);
+			}
+			else if ((generacion_inicial[i][2].getCapacidad_utilizada() + cantidad_leche_nodo[nodo-1]) <= generacion_inicial[i][2].getCapacidad_total()){
+				generacion_inicial[i][2].CargarCamion(cantidad_leche_nodo[nodo-1]);
+				generacion_inicial[i][2].anadirNodo(nodo);
+				generacion_inicial[i][2].setNodo_actual(nodo);
+			}
+		}
+		
+		while(tipos_leches[1].size() > 0){
+			nodo = tipos_leches[1][tipos_leches[1].size()-1];
+			tipos_leches[1].pop_back();
+			if ((generacion_inicial[i][1].getCapacidad_utilizada() + cantidad_leche_nodo[nodo-1]) <= generacion_inicial[i][1].getCapacidad_total()){
+				generacion_inicial[i][1].CargarCamion(cantidad_leche_nodo[nodo-1]);
+				generacion_inicial[i][1].anadirNodo(nodo);
+				generacion_inicial[i][1].setNodo_actual(nodo);
+			}
+			else if ((generacion_inicial[i][2].getCapacidad_utilizada() + cantidad_leche_nodo[nodo-1]) <= generacion_inicial[i][2].getCapacidad_total()){
+				generacion_inicial[i][2].CargarCamion(cantidad_leche_nodo[nodo-1]);
+				generacion_inicial[i][2].anadirNodo(nodo);
+				generacion_inicial[i][2].setNodo_actual(nodo);
+			}
+		}
+
+		while(tipos_leches[2].size() > 0){
+			nodo = tipos_leches[2][tipos_leches[2].size()-1];
+			tipos_leches[2].pop_back();
+			generacion_inicial[i][2].CargarCamion(cantidad_leche_nodo[nodo-1]);
+			generacion_inicial[i][2].anadirNodo(nodo);
+			generacion_inicial[i][2].setNodo_actual(nodo);
+			
+		}
+		
+		std::vector<int> aiuda;
+		for (int k = 0; k < 3; k++){
+			aiuda = generacion_inicial[i][k].getNodos_visitados();
+			std::cout << i << " " << generacion_inicial[i][k].getTipo_leche() << generacion_inicial[i][k].getCapacidad_utilizada() << std::endl;
+			for (int l = 0; l < aiuda.size(); l++){
+				std::cout << aiuda[l] << " ";
 			}
 			std::cout << std::endl;
 		}

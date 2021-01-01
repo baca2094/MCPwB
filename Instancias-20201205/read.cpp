@@ -182,9 +182,6 @@ int main(int argc, char** argv)
     
     solucion = mcpwb(20, 10, camiones, leches, cantidad_leche_nodo, distancias, vector_vector_leche, ganancias_leches);
 
-    cout << "Leche tipo A: " << solucion[0].getCapacidad_utilizada() << endl;
-    cout << "Leche tipo B: " << solucion[1].getCapacidad_utilizada() << endl;
-    cout << "Leche tipo C: " << solucion[2].getCapacidad_utilizada() << endl;
 /*
     distancias = distancies(posiciones_nodos);
 

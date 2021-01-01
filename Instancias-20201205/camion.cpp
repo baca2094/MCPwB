@@ -6,8 +6,9 @@ camion::camion(float capacidad, char leche, float min){
 	setCapacidad_total(capacidad);
 	setTipo_leche(leche);
 	setMin_leche(min);
-	setCapacidad_utilizada();
+	setCapacidad_utilizada(0);
 	setNodo_actual(1);
+	setDistancia_recorrida(0);
 }
 
 //copy constructor
@@ -31,9 +32,9 @@ void camion::setCapacidad_total(float capacidad){
 	capacidad_total = capacidad;
 }
 
-void camion::setCapacidad_utilizada(){
+void camion::setCapacidad_utilizada(float capacidad){
 
-	capacidad_utilizada = 0;
+	capacidad_utilizada = capacidad;
 }
 
 void camion::setTipo_leche(char leche){
@@ -56,6 +57,11 @@ void camion::setNodo_actual(int nodo){
 	nodo_actual = nodo;
 }
 
+void camion::setDistancia_recorrida(float distancia){
+
+	distancia_recorrida = distancia;
+}
+
 void camion::CargarCamion(float carga){
 
 	capacidad_utilizada += carga;
@@ -64,4 +70,20 @@ void camion::CargarCamion(float carga){
 void camion::anadirNodo(int nodo){
 
 	nodos_visitados.push_back(nodo);
+}
+
+void camion::distanciaRecorrida(std::vector<std::vector<float>> distancias){
+
+	for (int i = 0; i < nodos_visitados.size(); i++){
+		if (i == 0){
+			distancia_recorrida += distancias[0][nodos_visitados[0]-1];
+		}
+		else if (i == (nodos_visitados.size() - 1)){
+			distancia_recorrida += distancias[nodos_visitados[i]-1][0];
+		}
+		else {
+			distancia_recorrida += distancias[i-1][i];
+		}
+	}
+
 }
