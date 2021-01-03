@@ -82,7 +82,7 @@ void camion::distanciaRecorrida(std::vector<std::vector<float>> distancias){
 			distancia_recorrida += distancias[nodos_visitados[i]-1][0];
 		}
 		else {
-			distancia_recorrida += distancias[i-1][i];
+			distancia_recorrida += distancias[nodos_visitados[i-1]-1][nodos_visitados[i]-1];
 		}
 	}
 

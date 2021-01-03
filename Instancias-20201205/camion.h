@@ -39,6 +39,10 @@ class camion {
 		void setNodo_actual(int nodo);
 
 		void setDistancia_recorrida(float distancia);
+
+		void setGanancia_leche (float ganancia);
+
+		void setGanancia_total (float ganancia);
 		
 		//funciones Get
 		float getCapacidad_total() {return capacidad_total;}
@@ -54,7 +58,6 @@ class camion {
 		int getNodo_actual() {return nodo_actual;}
 
 		float getDistancia_recorrida() {return distancia_recorrida;}
-
 		//función de carga
 		void CargarCamion(float carga);
 		//añadir nodo a los visitados

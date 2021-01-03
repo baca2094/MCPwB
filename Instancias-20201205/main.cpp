@@ -1,7 +1,12 @@
-#include <bits/stdc++.h>
 #include <iostream>
+#include <bits/stdc++.h>
 #include <string>
 #include <vector> 
+#include <math.h>
+#include "camion.h"
+#include "mcpwb.h"
+#include "distancies.h"
+
 using namespace std; 
   
 // driver code 
@@ -10,163 +15,154 @@ int main(int argc, char** argv){
     // filestream variable file 
     fstream file; 
     string filename, word;
-    int n_camiones, n_nodos, contador = 0, n_leches, contador_camiones = 0, contador_leches = 0, contador_nodos = 0, contador_nodos2 = 0, 
-    general_flag = 1, flag_camiones = 0, flag_leches = 0, flag_ganancias = 0, flag_nodos;
-  	
+    int main_cont = 1;
+  	int n_camiones;
+	std::vector<float> capacidades_camiones;
+	capacidades_camiones.reserve(3);
+	int auxiliar_pos = 0;
+	int n_leches;
+	std::vector<float> ganancias_leche;
+	ganancias_leche.reserve(3);
+	int n_nodos;
+	std::vector<int> nodos;
+	int nodos_flag = 0;
+	int nodo_actual;
+	std::vector<std::vector<float>> posiciones_nodos;
+	std::vector<float> requerimientos_leches;
+	requerimientos_leches.reserve(3);
+	std::vector<std::vector<int>> tipos_leches_nodos(3);
+	std::vector<float> cantidad_leche;
+	std::vector<std::vector<float>> distancias;
+	std::vector<camion> camiones;
+	string tipos_leches = "ABC";
+	std::vector<float> auxiliar_posiciones;
+	auxiliar_posiciones.reserve(2);
     // filename of the file 
     filename = argv[1]; 
   
     // opening file 
     file.open(filename.c_str()); 
-  
-    // extracting words from the file 
-/*
-    int contador_camiones = 0;
-    int contador_leches = 0;
-    int contador_nodos = 0;
-    int contador_nodos2 = 0;
-    int general_flag = 1;
-    int flag_camiones = 0;
-    int flag_leches = 0;
-    int flag_ganancias = 0;
-    int flag_nodos;
-*/
-    vector<float> capacidades;
-    vector<float> req_leches;
-    vector<vector<int>> nodos_por_leche;
-    vector<float> ganancias_leches;
-    vector<float> produccion_nodos;
-    string leches = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	
+    while (file >> word){
+		if (main_cont == 1){
+            //se está leyendo la cantidad de camiones
+            n_camiones = stoi(word);
+            main_cont++;
+        }
 
-    while (file > word){
-        // displaying content 
-        //cout << word << endl;
-        
-        if (general_flag == 1 || (flag_camiones == 1 && contador < 2) || (flag_leches == 1 && contador < 4)){
+        else if (main_cont == 2){
+            //se guardan la capacidad de los camiones
+            capacidades_camiones.push_back(stof(word));
+			auxiliar_pos++;
+            if (auxiliar_pos == n_camiones){
+                main_cont++;
+				auxiliar_pos = 0;
+            }
+        }
 
-        	contador += 1;
+        else if (main_cont == 3){
+            //se ve cuántos tipos de leche hay
+            n_leches = stoi(word);
+            main_cont++;
+        }
 
+        else if (main_cont == 4){
+            //se guardan los requerimientos de cada leche de la fábrica
+            requerimientos_leches.push_back(stof(word));
+            auxiliar_pos++;
+            if(auxiliar_pos == n_leches){
+				auxiliar_pos = 0;
+                main_cont++;
+            }
         }
         
-        if (contador == 1 && flag_camiones == 0){
-
-         	n_camiones = stoi(word);
-         	flag_camiones = 1;
-         	general_flag = 0;
-         	//float capacidades [n_camiones];
+        else if (main_cont == 5){
+            //se guardan las ganancias por tipo de leche
+            ganancias_leche.push_back(stof(word));
+            auxiliar_pos++;
+            if (auxiliar_pos == n_leches){
+				auxiliar_pos = 0;
+                main_cont++;
+            }
         }
 
-        if (contador == 2 && flag_camiones == 1){
-
-        	capacidades.push_back(stof(word));
-        	contador_camiones += 1;
-
-        	if (contador_camiones >= n_camiones){
-
-        		flag_camiones = 0;
-        		general_flag = 1;
-        	}
-        } 
-
-        if (contador == 3){
-
-        	n_leches = stoi(word);
-        	flag_leches = 1;
-        	general_flag = 0;
-        	//float req_leches [n_leches];
-        	//vector <int> nodos_por_leche[n_leches];
+        else if (main_cont == 6){
+            //se ve cuántos nodos hay
+            n_nodos = stoi(word);
+            main_cont++;
         }
 
-        if (contador == 4 && flag_leches == 1){
+        else if (main_cont == 7){
 
-        	req_leches.push_back(stof(word));
-        	contador_leches += 1;
+            if (nodos_flag == 0){
+                nodo_actual = stoi(word);
+                nodos_flag++;
+            }
 
-        	if (contador_leches >= n_leches){
+            else if (nodos_flag == 1){
+                //se guarda la posición "x" del nodo
+				auxiliar_posiciones.push_back(stof(word));
+                nodos_flag++;
+            }
 
-        		general_flag = 1;
-        		contador_leches = 0;
-        		//float ganancias_leches [n_leches];
+            else if (nodos_flag == 2){
+                //se guarda la posición "y" del nodo
+				auxiliar_posiciones.push_back(stof(word));
+                posiciones_nodos.push_back(auxiliar_posiciones);
+                auxiliar_posiciones.clear();
+                nodos_flag++;
+            }
 
-        	}
+            else if (nodos_flag == 3){
+                //se guarda el nodo en su grupo de leche
+                if (word == "A"){
+					tipos_leches_nodos[0].push_back(nodo_actual);
+                }
+				else if (word == "B"){
+					tipos_leches_nodos[1].push_back(nodo_actual);
+				}
+				else if (word == "C"){
+					tipos_leches_nodos[2].push_back(nodo_actual);
+				}
+				nodos_flag++;
+                
+            }
+
+            else if (nodos_flag == 4){
+                //se guarda la cantidad de leche que produce el nodo
+                cantidad_leche.push_back(stof(word));
+                nodos_flag = 0;
+            }
         }
+    }
 
-        if (contador == 5 && flag_leches == 1){
-
-        	general_flag = 0;
-        	ganancias_leches.push_back(stof(word));
-        	contador_leches += 1;
-
-        	if(contador_leches >= n_leches){
-
-        		flag_leches = 0;
-        		general_flag = 1;
-        		flag_nodos = 1;
-        	}
+	float max_q, max_leche;
+    int index_max_q, index_max_leche;
+    while (!capacidades_camiones.empty()){
+        max_q = -1;
+        max_leche = -1;
+        for (int i = 0; i < capacidades_camiones.size(); i++){
+            if (capacidades_camiones[i] > max_q){
+                max_q = capacidades_camiones[i];
+                index_max_q = i;
+            }
         }
-
-        if (contador == 6 && flag_nodos == 1){
-
-        	int n_nodos = stoi(word);
-        	int distancias_nodos [n_nodos][n_nodos];
-        	int coordenadas_nodos [n_nodos][2];
-        	//float produccion_nodos [n_nodos];
-
+        for (int i = 0; i < requerimientos_leches.size(); i++){
+            if (requerimientos_leches[i] > max_leche){
+                max_leche = requerimientos_leches[i];
+                index_max_leche = i;
+            }
         }
+		//camion(float capacidad, char leche, float min, float ganancia);
+        camion kamion(max_q, tipos_leches[index_max_leche], max_leche);
+        camiones.push_back(kamion);
 
-        if (contador == 7 && flag_nodos == 1){
+        capacidades_camiones.erase(capacidades_camiones.begin() + index_max_q);
+        requerimientos_leches[index_max_leche] = 0;
+    }
 
-        	general_flag = 0;
-
-        	if (contador_nodos2 == 0){
-
-        		contador_nodos2 += 1;
-        	}
-
-        	else if (contador_nodos2 == 1){
-
-        		coordenadas_nodos [contador_nodos][0] = stof(word);
-        		contador_nodos2 += 1;
-        	}
-
-        	else if (contador_nodos2 == 2){
-
-        		coordenadas_nodos [contador_nodos][1] = stof(word);
-        		contador_nodos2 += 1;
-        	}
-
-        	else if (contador_nodos2 == 3){
-
-        		contador_nodos2 += 1;
-        		if (contador_nodos != 0){
-        			for(int i = 0; i < leches.length(); i++) {
-
-        				if (leches.at(i) == word){
-
-        					nodos_por_leche[i].push_back(contador_nodos);
-        					contador_nodos2 += 1;
-        					break;
-
-        				}
-
-					}
-        		}
-        	}
-
-        	else if (contador_nodos2 == 4){
-
-        		contador_nodos2 = 0;
-        		if (contador_nodos != 0){
-        			produccion_nodos[contador_nodos-1] = stof(word);
-        		}
-        		contador_nodos += 1;
-        	}
-
-        }
-    } 
+	distancias = distancies(posiciones_nodos);
+	std::vector<camion> solucion = mcpwb(5, 1, camiones, tipos_leches, cantidad_leche, distancias, tipos_leches_nodos, ganancias_leche);
     
-    file.close();
-
-
-    return 0; 
+	return 0; 
 } 

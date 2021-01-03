@@ -180,7 +180,7 @@ int main(int argc, char** argv)
 //std::vector<camion> mcpwb(int population_size, int iteraciones, std::vector<camion> camiones, string leches, std::vector<float> cantidad_leche_nodo, 
 //                          std::vector<std::vector<float>> distancias, std::vector<std::vector<int>> tipos_leches, std::vector<float> ganancias)
     
-    solucion = mcpwb(20, 10, camiones, leches, cantidad_leche_nodo, distancias, vector_vector_leche, ganancias_leches);
+    solucion = mcpwb(5, 10, camiones, leches, cantidad_leche_nodo, distancias, vector_vector_leche, ganancias_leches);
 
 /*
     distancias = distancies(posiciones_nodos);
