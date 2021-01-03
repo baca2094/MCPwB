@@ -1,4 +1,5 @@
 #include "camion.h"
+#include <iostream>
 
 //constructor
 camion::camion(float capacidad, char leche, float min){
@@ -62,6 +63,11 @@ void camion::setDistancia_recorrida(float distancia){
 	distancia_recorrida = distancia;
 }
 
+void camion::setUtilidad(float Utilidad){
+
+	utilidad = Utilidad;
+}
+
 void camion::CargarCamion(float carga){
 
 	capacidad_utilizada += carga;
@@ -74,12 +80,12 @@ void camion::anadirNodo(int nodo){
 
 void camion::distanciaRecorrida(std::vector<std::vector<float>> distancias){
 
-	for (int i = 0; i < nodos_visitados.size(); i++){
+	for (int i = 0; i <= nodos_visitados.size(); i++){
 		if (i == 0){
 			distancia_recorrida += distancias[0][nodos_visitados[0]-1];
 		}
-		else if (i == (nodos_visitados.size() - 1)){
-			distancia_recorrida += distancias[nodos_visitados[i]-1][0];
+		else if (i == (nodos_visitados.size())){
+			distancia_recorrida += distancias[nodos_visitados[i-1]-1][0];
 		}
 		else {
 			distancia_recorrida += distancias[nodos_visitados[i-1]-1][nodos_visitados[i]-1];

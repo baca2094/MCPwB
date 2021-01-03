@@ -162,7 +162,8 @@ int main(int argc, char** argv){
     }
 
 	distancias = distancies(posiciones_nodos);
-	std::vector<camion> solucion = mcpwb(5, 1, camiones, tipos_leches, cantidad_leche, distancias, tipos_leches_nodos, ganancias_leche);
+	mcpwb(10, 1, camiones, tipos_leches, cantidad_leche, distancias, tipos_leches_nodos, ganancias_leche);
+    
     
 	return 0; 
 } 
