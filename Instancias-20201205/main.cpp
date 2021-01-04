@@ -15,34 +15,39 @@ int main(int argc, char** argv){
     // filestream variable file 
     fstream file; 
     string filename, word;
-    int main_cont = 1;
-  	int n_camiones;
-	std::vector<float> capacidades_camiones;
+    int main_cont = 1; //contador para saber qué línea del txt se está leyendo
+  	int n_camiones; //número de camiones del problema (aunque el código está ajustado para 3)
+    int auxiliar_pos = 0; //variable auxiliar multipropósito
+	int n_leches; //número de tipo de leches (aunque el código está ajustado para 3)
+    int nodos_flag = 0; //bandera para leer las líneas finales del código
+	int nodo_actual; //nodo actual que se está leyendo
+    int n_nodos; //número de nodos
+	std::vector<float> capacidades_camiones; //vector con las capacidades de los camiones
 	capacidades_camiones.reserve(3);
-	int auxiliar_pos = 0;
-	int n_leches;
-	std::vector<float> ganancias_leche;
+	std::vector<float> ganancias_leche; //vector con las ganancias por tipo de leche
 	ganancias_leche.reserve(3);
-	int n_nodos;
-	std::vector<int> nodos;
-	int nodos_flag = 0;
-	int nodo_actual;
-	std::vector<std::vector<float>> posiciones_nodos;
-	std::vector<float> requerimientos_leches;
+	std::vector<int> nodos; // los nodos se guardan tal cual vienen en el txt, o sea el nodo de la fábrica es el 1 y está
+                            // en la posición 0 del arreglo
+	std::vector<std::vector<float>> posiciones_nodos; // posiciones de los nodos de la forma (x,y)
+	std::vector<float> requerimientos_leches; // los requerimientos por tipo de leche
 	requerimientos_leches.reserve(3);
-	std::vector<std::vector<int>> tipos_leches_nodos(3);
-	std::vector<float> cantidad_leche;
-	std::vector<std::vector<float>> distancias;
-	std::vector<camion> camiones;
-	string tipos_leches = "ABC";
-	std::vector<float> auxiliar_posiciones;
+	std::vector<std::vector<int>> tipos_leches_nodos(3); // se guardan los nodos en su correspondiente grupo de producción,
+                                                        // es decir, el primer elemento tiene los que producen leche tipo A,
+                                                        // el segundo los del tipo B y el tercero los del tipo C
+	std::vector<float> cantidad_leche; // cantidad de leche producida por cada nodo
+	std::vector<std::vector<float>> distancias; // matriz de las distancias entre los nodos
+	std::vector<camion> camiones; // vector con los camiones a utilizar
+	string tipos_leches = "ABC"; // tipos de leches
+	std::vector<float> auxiliar_posiciones; // vector auxiliar para guardar las posiciones de los nodos (x,y)
 	auxiliar_posiciones.reserve(2);
+
     // filename of the file 
     filename = argv[1]; 
-  
+    int iteraciones = stoi(argv[2]);
     // opening file 
     file.open(filename.c_str()); 
 	
+    // lectura del txt
     while (file >> word){
 		if (main_cont == 1){
             //se está leyendo la cantidad de camiones
@@ -51,7 +56,7 @@ int main(int argc, char** argv){
         }
 
         else if (main_cont == 2){
-            //se guardan la capacidad de los camiones
+            //se guarda la capacidad de los camiones
             capacidades_camiones.push_back(stof(word));
 			auxiliar_pos++;
             if (auxiliar_pos == n_camiones){
@@ -138,6 +143,8 @@ int main(int argc, char** argv){
 
 	float max_q, max_leche;
     int index_max_q, index_max_leche;
+    // se crean los camiones
+    // la asignación es: el que tenga más requerimiento se le asigna el camión más grande
     while (!capacidades_camiones.empty()){
         max_q = -1;
         max_leche = -1;
@@ -153,16 +160,18 @@ int main(int argc, char** argv){
                 index_max_leche = i;
             }
         }
-		//camion(float capacidad, char leche, float min, float ganancia);
+		//camion(float capacidad, char leche, float min);
         camion kamion(max_q, tipos_leches[index_max_leche], max_leche);
         camiones.push_back(kamion);
 
         capacidades_camiones.erase(capacidades_camiones.begin() + index_max_q);
         requerimientos_leches[index_max_leche] = 0;
     }
-
+    
+    // cálculo de la distancia entre nodos
 	distancias = distancies(posiciones_nodos);
-	mcpwb(10, 1, camiones, tipos_leches, cantidad_leche, distancias, tipos_leches_nodos, ganancias_leche);
+    //resolución del problema
+	mcpwb(10, iteraciones, camiones, tipos_leches, cantidad_leche, distancias, tipos_leches_nodos, ganancias_leche);
     
     
 	return 0; 

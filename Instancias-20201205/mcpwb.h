@@ -14,4 +14,6 @@ float utilidad(float capacidad_utilizada, float ganancia_leche, float distancia_
 
 float utilidad_grupo(std::vector<camion> camiones);
 
+int mejor_utilidad(float utilidades_grupos[], int size);
+
 #endif
