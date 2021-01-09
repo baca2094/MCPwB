@@ -26,6 +26,10 @@ camion::camion(const camion &p){
 	min_leche = p.min_leche;
 		
 	nodo_actual = p.nodo_actual;
+
+	utilidad = p.utilidad;
+
+	distancia_recorrida = p.distancia_recorrida;
 }
 
 void camion::setCapacidad_total(float capacidad){

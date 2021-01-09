@@ -29,7 +29,6 @@ int mejor_utilidad(float utilidades_grupos[], int size){
 			mejor_pos = i;
 		}
 	}
-
 	return mejor_pos;
 }
 
@@ -58,6 +57,13 @@ void mcpwb(int population_size, int iteraciones, std::vector<camion> camiones, s
  	pop_actual = sol_inicial(population_size, camiones_ordenados, cantidad_leche_nodo, distancias, tipos_leches, ganancias);
 	
 	for (int i = 0; i < pop_actual.size(); i++){
+		for (int j = 0; j < pop_actual[i].size(); j++){
+			pop_actual[i][j].distanciaRecorrida(distancias);
+			pop_actual[i][j].setUtilidad(utilidad(pop_actual[i][j].getCapacidad_utilizada(), ganancias[j], pop_actual[i][j].getDistancia_recorrida()));
+		}
+	}
+	float aux_utilidad = 0;
+	for (int i = 0; i < pop_actual.size(); i++){
 		utilidad_cromosoma[i] = utilidad_grupo(pop_actual[i]);
 	}
 	float mejor_utilidad_grupo;
@@ -65,14 +71,16 @@ void mcpwb(int population_size, int iteraciones, std::vector<camion> camiones, s
 	mejor_utilidad_pos = mejor_utilidad(utilidad_cromosoma, population_size);
 	mejor_utilidad_grupo = utilidad_cromosoma[mejor_utilidad_pos];
 	for (int i = 0; i < pop_actual[mejor_utilidad_pos].size(); i++){
-		solucion.push_back(pop_actual[mejor_utilidad_pos][i]);
+		camion camion1 = pop_actual[mejor_utilidad_pos][i];
+		solucion.push_back(camion1);
+		//no entiendo por qué pop_actual[mejor_utilidad_pos][i].getUtilidad() tira bien el resultado
+		//pero solucion[i].getUtilidad() no.
 	}
-
 	std::vector<int> palprint;
-	std::cout << solucion[0].getUtilidad() << " " << solucion[1].getUtilidad() << " " << solucion[2].getUtilidad() << std::endl;
+	std::cout << solucion[0].getUtilidad() << " " << solucion[1].getUtilidad() << 
+	" " << solucion[2].getUtilidad() << " = " << mejor_utilidad_grupo << std::endl;
 	std::cout << std::endl;
 	for (int i = 0; i < solucion.size(); i++){
-		solucion[i].distanciaRecorrida(distancias);
 		palprint = solucion[i].getNodos_visitados();
 		std::cout << "1-";
 		for (int j = 0; j < palprint.size(); j++){
@@ -181,25 +189,26 @@ void mcpwb(int population_size, int iteraciones, std::vector<camion> camiones, s
 
 		for (int i = 0; i < pop_actual.size(); i++){
 			utilidad_cromosoma[i] = utilidad_grupo(pop_actual[i]);
+			//std::cout << utilidad_cromosoma[i] << std::endl;
+			//std::cout << mejor_utilidad_grupo << std::endl;
 			if (utilidad_cromosoma[i] >= mejor_utilidad_grupo){
 				mejor_utilidad_grupo = utilidad_cromosoma[i];
 				mejor_utilidad_pos = i;
-				for (int j = 0; j < pop_actual[mejor_utilidad_pos].size(); j++){
-					solucion[j] = pop_actual[mejor_utilidad_pos][j];
-				}
+				camion camion1 = pop_actual[i][0];
+				camion camion2 = pop_actual[i][1];
+				camion camion3 = pop_actual[i][2];
+				solucion[0] = camion1;
+				solucion[1] = camion2;
+				solucion[2] = camion3;
 			}
 		}
 		iteracion_actual++;
 	}
-	/*
-	pop_actual1.push_back(pop_actual[0][0]);
-	pop_actual1.push_back(pop_actual[0][1]);
-	pop_actual1.push_back(pop_actual[0][2]);
-	*/
-	std::cout << solucion[0].getUtilidad() << " " << solucion[1].getUtilidad() << " " << solucion[2].getUtilidad() << std::endl;
+
+	std::cout << solucion[0].getUtilidad() << " " << solucion[1].getUtilidad() << 
+	" " << solucion[2].getUtilidad() << " = " << mejor_utilidad_grupo << std::endl;
 	std::cout << std::endl;
 	for (int i = 0; i < solucion.size(); i++){
-	//	solucion[i].distanciaRecorrida(distancias);
 		palprint = solucion[i].getNodos_visitados();
 		std::cout << "1-";
 		for (int j = 0; j < palprint.size(); j++){
@@ -324,14 +333,7 @@ std::vector<std::vector<camion>> sol_inicial(int population_size, std::vector<ca
 			}
 		}
 	}
-	
-	
-	for (int i = 0; i < generacion_inicial.size(); i++){
-		for (int j = 0; j < generacion_inicial[i].size(); j++){
-			generacion_inicial[i][j].distanciaRecorrida(distancias);
-			generacion_inicial[i][j].setUtilidad(utilidad(generacion_inicial[i][j].getCapacidad_utilizada(), ganancias[j], generacion_inicial[i][j].getDistancia_recorrida()));
-		}
-	}
+
 	/*
 	std::vector<int> palprint;
 	palprint = generacion_inicial[0][0].getNodos_visitados();
