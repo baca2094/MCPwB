@@ -16,4 +16,6 @@ float utilidad_grupo(std::vector<camion> camiones);
 
 int mejor_utilidad(float utilidades_grupos[], int size);
 
+std::vector<int> encontrar_duplicados(int poblacion, std::vector<int> nodos);
+
 #endif
