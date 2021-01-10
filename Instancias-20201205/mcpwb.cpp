@@ -216,14 +216,14 @@ void mcpwb(int population_size, int iteraciones, std::vector<camion> camiones, s
 			for (int j = 0; j < pop_actual[i].size(); j++){
 				auxiliar_nodos1 = pop_actual[i][j].getNodos_visitados();
 				pop_actual[i][j].setDistancia_recorrida(0);
-					pop_actual[i][j].setCapacidad_utilizada(0);
-					pop_actual[i][j].distanciaRecorrida(distancias);
-					pop_actual[i][j].setUtilidad(0);
-					for (int k = 0; k < auxiliar_nodos1.size(); k++){
-						pop_actual[i][j].CargarCamion(cantidad_leche_nodo[auxiliar_nodos1[k]-1]);
-					}
-					pop_actual[i][j].setUtilidad((utilidad(pop_actual[i][j].getCapacidad_utilizada(), ganancias[j], pop_actual[i][j].getDistancia_recorrida())));
-			}
+				pop_actual[i][j].setCapacidad_utilizada(0);
+				pop_actual[i][j].distanciaRecorrida(distancias);
+				pop_actual[i][j].setUtilidad(0);
+				for (int k = 0; k < auxiliar_nodos1.size(); k++){
+					pop_actual[i][j].CargarCamion(cantidad_leche_nodo[auxiliar_nodos1[k]-1]);
+				}
+				pop_actual[i][j].setUtilidad((utilidad(pop_actual[i][j].getCapacidad_utilizada(), ganancias[j], pop_actual[i][j].getDistancia_recorrida())));
+		}
 		}
 		for (int i = 0; i < pop_actual.size(); i++){
 			random1 = random2;

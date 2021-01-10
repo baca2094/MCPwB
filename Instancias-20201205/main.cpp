@@ -46,7 +46,7 @@ int main(int argc, char** argv){
     int iteraciones = stoi(argv[2]);
     // opening file 
     file.open(filename.c_str()); 
-	
+
     // lectura del txt
     while (file >> word){
 		if (main_cont == 1){
