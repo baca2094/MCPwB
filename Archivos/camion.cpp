@@ -86,7 +86,6 @@ void camion::distanciaRecorrida(std::vector<std::vector<float>> distancias){
 
 	for (int i = 0; i <= nodos_visitados.size(); i++){
 		if (i == 0){
-			std::cout << nodos_visitados[0]-1 << std::endl;
 			distancia_recorrida += distancias[0][nodos_visitados[0]-1];
 		}
 		else if (i == (nodos_visitados.size())){
