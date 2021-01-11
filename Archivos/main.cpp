@@ -171,8 +171,7 @@ int main(int argc, char** argv){
     // cálculo de la distancia entre nodos
 	distancias = distancies(posiciones_nodos);
     //resolución del problema
-	mcpwb(10, iteraciones, camiones, tipos_leches, cantidad_leche, distancias, tipos_leches_nodos, ganancias_leche);
-    
+	mcpwb(50, iteraciones, camiones, tipos_leches, cantidad_leche, distancias, tipos_leches_nodos, ganancias_leche);
     
 	return 0; 
 } 

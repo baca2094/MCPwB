@@ -34,6 +34,7 @@ int mejor_utilidad(float utilidades_grupos[], int size){
 	return mejor_pos;
 }
 
+//función para encontrar los duplicados tras el cruzamiento
 std::vector<int> encontrar_duplicados(int poblacion, std::vector<int> nodos){
 
 	int nodos_totales [poblacion] = {};
@@ -46,6 +47,54 @@ std::vector<int> encontrar_duplicados(int poblacion, std::vector<int> nodos){
 	}
 	return repetidos;
 }
+
+//intento de crear una funcion para los cruzamientos de distintos largos
+bool leche(std::vector<std::vector<int>> tipos_leches, char tipo, int nodo){
+	
+	std::vector<int>::iterator it;
+	if (tipo == 'A'){
+		it = std::find(tipos_leches[0].begin(), tipos_leches[0].end(), nodo);
+		return (it != tipos_leches[0].end());
+	}
+	else if (tipo == 'B'){
+		it = std::find(tipos_leches[1].begin(), tipos_leches[1].end(), nodo);
+		return (it != tipos_leches[1].end());
+	}
+	else if (tipo == 'C'){
+		it = std::find(tipos_leches[2].begin(), tipos_leches[2].end(), nodo);
+		return (it != tipos_leches[2].end());
+	}	
+}
+
+//función para encontrar la diferencia entre dos vectores
+std::vector<int> diferencia(int poblacion, std::vector<int> nodos1, std::vector<int> nodos2, char tipo, std::vector<std::vector<int>> tipos_leches){
+
+	int nodos_totales1 [poblacion] = {};
+	int nodos_totales2 [poblacion] = {};
+	bool var;
+	std::vector<int> repetidos;
+	std::vector<int> opciones;
+	for (int i = 0; i < nodos1.size(); i++){
+		nodos_totales1[nodos1[i]-1] += 1;
+		if (nodos_totales1[nodos1[i]-1] == 2){
+			repetidos.push_back(nodos1[i]);
+		}
+	}
+	for (int i = 0; i < nodos2.size(); i++){
+		nodos_totales2[nodos2[i]-1] += 1;
+	}
+	for (int i = 0; i < poblacion; i++){
+		if (nodos_totales1[i] == 0 && nodos_totales2[i] == 1){
+			var = leche(tipos_leches, tipo, i+1);
+			if (var){
+				opciones.push_back(i+1);
+			}
+		}
+	}
+	return opciones;
+}
+
+
 // función para resolver el problema
 void mcpwb(int population_size, int iteraciones, std::vector<camion> camiones, std::string leches, std::vector<float> cantidad_leche_nodo, 
 							std::vector<std::vector<float>> distancias, std::vector<std::vector<int>> tipos_leches, std::vector<float> ganancias){
@@ -87,25 +136,8 @@ void mcpwb(int population_size, int iteraciones, std::vector<camion> camiones, s
 	for (int i = 0; i < pop_actual[mejor_utilidad_pos].size(); i++){
 		camion camion1 = pop_actual[mejor_utilidad_pos][i];
 		solucion.push_back(camion1);
-		//no entiendo por qué pop_actual[mejor_utilidad_pos][i].getUtilidad() tira bien el resultado
-		//pero solucion[i].getUtilidad() no.
 	}
 	std::vector<int> palprint;
-	/*
-	std::cout << solucion[0].getUtilidad() << " " << solucion[1].getUtilidad() << 
-	" " << solucion[2].getUtilidad() << " = " << mejor_utilidad_grupo << std::endl;
-	std::cout << std::endl;
-	for (int i = 0; i < solucion.size(); i++){
-		palprint = solucion[i].getNodos_visitados();
-		std::cout << "1-";
-		for (int j = 0; j < palprint.size(); j++){
-			std::cout << palprint[j] << "-";
-		}
-		std::cout << "1 ";
-		std::cout << solucion[i].getDistancia_recorrida() << " " << solucion[i].getCapacidad_utilizada() <<
-		" " << solucion[i].getTipo_leche() << std::endl;
-	}
-	*/
 	srand(time(NULL));
 	int iteracion_actual = 1;
 	float pc = 80;
@@ -121,6 +153,7 @@ void mcpwb(int population_size, int iteraciones, std::vector<camion> camiones, s
 	int gen2 = 0;
 	int random_cut;
 	float utilidad_camion;
+	int cont_aux;
 	std::vector<std::vector<camion>> auxiliar;
 	std::vector<camion> auxiliar_hijo1;
 	std::vector<camion> auxiliar_hijo2;
@@ -133,6 +166,7 @@ void mcpwb(int population_size, int iteraciones, std::vector<camion> camiones, s
 	std::vector<int>::iterator it1;
 	std::vector<int>::iterator it2;
 	while(iteracion_actual <= iteraciones){
+
 		auxiliar.clear();
 		while(!pop_actual.empty()){
 			size = pop_actual.size();
@@ -149,6 +183,8 @@ void mcpwb(int population_size, int iteraciones, std::vector<camion> camiones, s
 				}
 			}
 			random_pc = rand() % 100 + 1;
+			
+			//función de cruzamiento
 			if (random_pc <= pc){
 				for (int i = 0; i < 3; i++){
 					auxiliar_nodos1 = pop_actual[gen1][i].getNodos_visitados();
@@ -172,14 +208,47 @@ void mcpwb(int population_size, int iteraciones, std::vector<camion> camiones, s
 					for (int i = random_cut; i < size1; i++){
 						auxiliar_nodos_hijo2.push_back(auxiliar_nodos1[i]);
 					}
+
 					repetidos_hijo_1 = encontrar_duplicados(cantidad_leche_nodo.size(), auxiliar_nodos_hijo1);
 					repetidos_hijo_2 = encontrar_duplicados(cantidad_leche_nodo.size(), auxiliar_nodos_hijo2);
-
-					for (int j = 0; j < repetidos_hijo_1.size(); j++){
-						it1 = std::find(auxiliar_nodos_hijo1.begin(), auxiliar_nodos_hijo1.end(), repetidos_hijo_1[j]);
-						it2 = std::find(auxiliar_nodos_hijo2.begin(), auxiliar_nodos_hijo2.end(), repetidos_hijo_2[j]);
-						*it1 = repetidos_hijo_2[j];
-						*it2 = repetidos_hijo_1[j];
+					cont_aux = 0;
+					if (repetidos_hijo_2.size() == repetidos_hijo_1.size()){
+						for (int j = 0; j < repetidos_hijo_1.size(); j++){
+							it1 = std::find(auxiliar_nodos_hijo1.begin(), auxiliar_nodos_hijo1.end(), repetidos_hijo_1[j]);
+							it2 = std::find(auxiliar_nodos_hijo2.begin(), auxiliar_nodos_hijo2.end(), repetidos_hijo_2[j]);
+							*it1 = repetidos_hijo_2[j];
+							*it2 = repetidos_hijo_1[j];
+						}
+					}
+					else if (repetidos_hijo_1.size() > repetidos_hijo_2.size()){
+						for (int j = 0; j < repetidos_hijo_2.size(); j++){
+							it1 = std::find(auxiliar_nodos_hijo1.begin(), auxiliar_nodos_hijo1.end(), repetidos_hijo_1[j]);
+							it2 = std::find(auxiliar_nodos_hijo2.begin(), auxiliar_nodos_hijo2.end(), repetidos_hijo_2[j]);
+							*it1 = repetidos_hijo_2[j];
+							*it2 = repetidos_hijo_1[j];
+						}
+						size = repetidos_hijo_2.size();
+						auxiliar_nodos1 = diferencia(cantidad_leche_nodo.size(), auxiliar_nodos_hijo1, auxiliar_nodos_hijo2, pop_actual[gen1][i].getTipo_leche(), tipos_leches);
+						for (int j = size; j < repetidos_hijo_1.size(); j++){
+							it1 = std::find(auxiliar_nodos_hijo1.begin(), auxiliar_nodos_hijo1.end(), repetidos_hijo_1[j]);
+							*it1 = auxiliar_nodos1[cont_aux];
+							cont_aux++;
+						}
+					}
+					else if (repetidos_hijo_2.size() > repetidos_hijo_1.size()){
+						for (int j = 0; j < repetidos_hijo_1.size(); j++){
+							it1 = std::find(auxiliar_nodos_hijo1.begin(), auxiliar_nodos_hijo1.end(), repetidos_hijo_1[j]);
+							it2 = std::find(auxiliar_nodos_hijo2.begin(), auxiliar_nodos_hijo2.end(), repetidos_hijo_2[j]);
+							*it1 = repetidos_hijo_2[j];
+							*it2 = repetidos_hijo_1[j];
+						}
+						size = repetidos_hijo_1.size();
+						auxiliar_nodos1 = diferencia(cantidad_leche_nodo.size(), auxiliar_nodos_hijo2, auxiliar_nodos_hijo1, pop_actual[gen1][i].getTipo_leche(), tipos_leches);
+						for (int j = size; j < repetidos_hijo_2.size(); j++){
+							it1 = std::find(auxiliar_nodos_hijo2.begin(), auxiliar_nodos_hijo2.end(), repetidos_hijo_2[j]);
+							*it1 = auxiliar_nodos1[cont_aux];
+							cont_aux++;
+						}
 					}
 					camion camion1 = pop_actual[gen1][i];
 					camion camion2 = pop_actual[gen2][i];
@@ -212,6 +281,7 @@ void mcpwb(int population_size, int iteraciones, std::vector<camion> camiones, s
 
 		pop_actual = auxiliar;
 		
+		// para setear bien las distancias, cargas y utilidades
 		for (int i = 0; i < pop_actual.size(); i ++){
 			for (int j = 0; j < pop_actual[i].size(); j++){
 				auxiliar_nodos1 = pop_actual[i][j].getNodos_visitados();
@@ -225,6 +295,7 @@ void mcpwb(int population_size, int iteraciones, std::vector<camion> camiones, s
 				pop_actual[i][j].setUtilidad((utilidad(pop_actual[i][j].getCapacidad_utilizada(), ganancias[j], pop_actual[i][j].getDistancia_recorrida())));
 		}
 		}
+		//función de mutación 
 		for (int i = 0; i < pop_actual.size(); i++){
 			random1 = random2;
 			for (int j = 0; j < pop_actual[i].size(); j++){
@@ -251,15 +322,11 @@ void mcpwb(int population_size, int iteraciones, std::vector<camion> camiones, s
 					}
 					pop_actual[i][j].setUtilidad((utilidad(pop_actual[i][j].getCapacidad_utilizada(), ganancias[j], pop_actual[i][j].getDistancia_recorrida())));
 				}
-			}
-
-			
+			}	
 		}
-
+		//se guarda la mejor solución
 		for (int i = 0; i < pop_actual.size(); i++){
 			utilidad_cromosoma[i] = utilidad_grupo(pop_actual[i]);
-			//std::cout << utilidad_cromosoma[i] << std::endl;
-			//std::cout << mejor_utilidad_grupo << std::endl;
 			if (utilidad_cromosoma[i] >= mejor_utilidad_grupo){
 				mejor_utilidad_grupo = utilidad_cromosoma[i];
 				mejor_utilidad_pos = i;
@@ -273,7 +340,7 @@ void mcpwb(int population_size, int iteraciones, std::vector<camion> camiones, s
 		}
 		iteracion_actual++;
 	}
-
+	//print de la solución final
 	std::cout << solucion[0].getUtilidad() << " " << solucion[1].getUtilidad() << 
 	" " << solucion[2].getUtilidad() << " = " << mejor_utilidad_grupo << std::endl;
 	std::cout << std::endl;
@@ -323,6 +390,7 @@ std::vector<std::vector<camion>> sol_inicial(int population_size, std::vector<ca
 	std::copy(tipos_leches_nodos[2].begin(), tipos_leches_nodos[2].end(), leches_C1);
 	srand(time(NULL));
 	int max_iteraciones = 0;
+	//se crea la población 
 	for (int i = 0; i < generacion_inicial.size(); i++){
 		if (i > 0){
 			for (int k = 0; k < size_A; k++){
@@ -401,18 +469,7 @@ std::vector<std::vector<camion>> sol_inicial(int population_size, std::vector<ca
 				}
 			}
 		}
-	}
-
-	/*
-	std::vector<int> palprint;
-	palprint = generacion_inicial[0][0].getNodos_visitados();
-	for (int i = 0; i < palprint.size(); i++){
-		std::cout << palprint[i] << " ";
-	}
-	std::cout << std::endl;
-	std::cout << generacion_inicial[0][0].getDistancia_recorrida() << std::endl;
-	*/
-	
+	}	
 	return generacion_inicial;
 }
 

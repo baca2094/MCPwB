@@ -18,4 +18,8 @@ int mejor_utilidad(float utilidades_grupos[], int size);
 
 std::vector<int> encontrar_duplicados(int poblacion, std::vector<int> nodos);
 
+bool leche(std::vector<std::vector<int>> tipos_leches, char tipo, int nodo);
+
+std::vector<int> diferencia(int poblacion, std::vector<int> nodos1, std::vector<int> nodos2, char tipo, std::vector<std::vector<int>> tipos_leches);
+
 #endif
